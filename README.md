@@ -18,7 +18,9 @@ Prediction: Estimates crop production based on user inputs for area harvested an
 Model Evaluation: Provides evaluation metrics such as MAE, MSE, RMSE, and R² to assess model performance.
 
 Prediction History: Allows users to track and download the history of predictions.
-Models Used
+
+## Models Used
+
 Linear Regression: A simple and interpretable model used to predict crop production based on linear relationships between features.
 
 Decision Tree Regressor: A non-linear model that splits data into smaller subsets based on feature values.
