@@ -25,7 +25,8 @@ Decision Tree Regressor: A non-linear model that splits data into smaller subset
 
 Random Forest Regressor: An ensemble model that combines multiple decision trees to improve prediction accuracy and reduce overfitting.
 
-Evaluation Metrics
+## Evaluation Metrics
+
 MAE (Mean Absolute Error): Measures the average magnitude of errors in predictions.
 
 MSE (Mean Squared Error): Measures the average of the squared differences between predicted and actual values.
