@@ -63,9 +63,9 @@ print("📁 Cleaned data saved to 'cleaned_crop_data_final.csv'")
 try:
     conn = mysql.connector.connect(
         host="localhost",
-        user="root",        # ✅ Replace with your MySQL username
-        password="Padmavathi@09",    # ✅ Replace with your MySQL password
-        database="crop_production_db"     # ✅ Replace with your DB name
+        user="root",        
+        password="Padmavathi@09",    
+        database="crop_production_db"     
     )
     cursor = conn.cursor()
     print("🔌 Connected to MySQL!")
