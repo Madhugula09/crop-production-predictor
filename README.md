@@ -51,9 +51,9 @@ Random Forest Regressor: An ensemble model that combines multiple decision trees
 
 Machine Learning Models: Implements three models for crop production prediction:
 
->>> Prediction: Estimates crop production based on user inputs for area harvested and yield.
+-- Prediction: Estimates crop production based on user inputs for area harvested and yield.
 
->>> Model Evaluation: Provides evaluation metrics such as MAE, MSE, RMSE, and R² to assess model performance.
+-- Model Evaluation: Provides evaluation metrics such as MAE, MSE, RMSE, and R² to assess model performance.
 
 ## 📄 Prediction History 
 
@@ -64,20 +64,14 @@ Prediction History: Allows users to track and download the history of prediction
 
 ## 🌐 Interactive Dashboard
 
--- Streamlit app to filter and predict crop production visually.
+-- Streamlit app to filters 
 
 ![image](https://github.com/user-attachments/assets/797aaf67-e80d-4a5f-a6ab-6500ede123e5)
 
--- Dynamic Filtering Panel
+1. Market Price Forecasting and Precision Farming
 
--- Market Price Forecasting
+2. Agro-Technology Solutions and Evaluation & Insights Section
 
--- Precision Farming
-
--- Agro-Technology Solutions
-
--- Evaluation & Insights Section
-
--- Dark Themed UI
+3. Dark Themed UI and Dynamic Filtering Panel
 
 
