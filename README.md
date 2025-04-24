@@ -1,33 +1,26 @@
 ## crop-production-predictor
 A model to predict crop production using machine learning and agricultural data with three different models.
+
+## 🛠️ Tech Stack
+Language: Python
+Libraries: pandas, scikit-learn, matplotlib, seaborn, streamlit, mysql-connector-python
+Database: MySQL
+Visualization: Matplotlib, Seaborn, Streamlit
+
 ## Features
-Data Preprocessing: Removes unnecessary columns, handles missing values, and cleans numerical data.
+-- Data Preprocessing: Removes unnecessary columns, handles missing values, and cleans numerical data.
 
-Outlier Detection: Uses the IQR method to identify and remove outliers.
+ ![image](https://github.com/user-attachments/assets/77c43522-ea76-4118-baf6-4096f0b53f63)
 
-Machine Learning Models: Implements three models for crop production prediction:
+## 📊 Database Integration
 
--- Linear Regression
+-- Stored processed data in a MySQL database (crop_data table).
 
--- Decision Tree Regressor
+## 📈 Evaluation Metrics and Outlier Removal 
 
--- Random Forest Regressor
+-- Compared models using RMSE, MAE, and R².
 
-Prediction: Estimates crop production based on user inputs for area harvested and yield.
-
-Model Evaluation: Provides evaluation metrics such as MAE, MSE, RMSE, and R² to assess model performance.
-
-Prediction History: Allows users to track and download the history of predictions.
-
-## Models Used
-
-Linear Regression: A simple and interpretable model used to predict crop production based on linear relationships between features.
-
-Decision Tree Regressor: A non-linear model that splits data into smaller subsets based on feature values.
-
-Random Forest Regressor: An ensemble model that combines multiple decision trees to improve prediction accuracy and reduce overfitting.
-
-## Evaluation Metrics
+Filtered out invalid entries like nulls and non-positive values to ensure clean data for modeling.
 
 MAE (Mean Absolute Error): Measures the average magnitude of errors in predictions.
 
@@ -36,3 +29,44 @@ MSE (Mean Squared Error): Measures the average of the squared differences betwee
 RMSE (Root Mean Squared Error): The square root of MSE, representing the error in the same units as the target variable.
 
 R² (Coefficient of Determination): Measures the proportion of the variance in the dependent variable that is predictable from the independent variables.
+
+![image](https://github.com/user-attachments/assets/d9e176f0-2fd3-44b7-8e84-44bbf548529d)
+
+--- Actual vs preddict :
+
+![image](https://github.com/user-attachments/assets/4d02d15b-0a98-4dd0-923a-c277f1facf9f)
+
+
+Machine Learning Models: Implements three models for crop production prediction:
+
+![image](https://github.com/user-attachments/assets/08b32746-121c-4932-8294-b81360fc9138)
+
+-- Linear Regression
+
+-- Decision Tree Regressor
+
+-- Random Forest Regressor
+
+
+Prediction: Estimates crop production based on user inputs for area harvested and yield.
+
+Model Evaluation: Provides evaluation metrics such as MAE, MSE, RMSE, and R² to assess model performance.
+
+Prediction History: Allows users to track and download the history of predictions.
+
+## 📄 Prediction History 
+
+![image](https://github.com/user-attachments/assets/aa8555d6-ede2-44f8-9381-e8144d33b836)
+
+## 🤖 ML Models: Trained and evaluated three models:
+
+Linear Regression: A simple and interpretable model used to predict crop production based on linear relationships between features.
+
+Decision Tree Regressor: A non-linear model that splits data into smaller subsets based on feature values.
+
+Random Forest Regressor: An ensemble model that combines multiple decision trees to improve prediction accuracy and reduce overfitting.
+
+## 🌐 Interactive Dashboard
+
+-- Streamlit app to filter and predict crop production visually.
+
