@@ -2,10 +2,13 @@
 A model to predict crop production using machine learning and agricultural data with three different models.
 
 ## 🛠️ Tech Stack
-Language: Python
-Libraries: pandas, scikit-learn, matplotlib, seaborn, streamlit, mysql-connector-python
-Database: MySQL
-Visualization: Matplotlib, Seaborn, Streamlit
+. Language: Python
+
+. Libraries: pandas, scikit-learn, matplotlib, seaborn, streamlit, mysql-connector-python
+
+. Database: MySQL
+
+. Visualization: Matplotlib, Seaborn, Streamlit
 
 ## Features
 -- Data Preprocessing: Removes unnecessary columns, handles missing values, and cleans numerical data.
@@ -62,4 +65,19 @@ Prediction History: Allows users to track and download the history of prediction
 ## 🌐 Interactive Dashboard
 
 -- Streamlit app to filter and predict crop production visually.
+
+![image](https://github.com/user-attachments/assets/797aaf67-e80d-4a5f-a6ab-6500ede123e5)
+
+-- Dynamic Filtering Panel
+
+-- Market Price Forecasting
+
+-- Precision Farming
+
+-- Agro-Technology Solutions
+
+-- Evaluation & Insights Section
+
+-- Dark Themed UI
+
 
