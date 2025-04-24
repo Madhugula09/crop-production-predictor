@@ -72,6 +72,4 @@ Prediction History: Allows users to track and download the history of prediction
 
 2. Agro-Technology Solutions and Evaluation & Insights Section
 
-3. Dark Themed UI and Dynamic Filtering Panel
-
 
