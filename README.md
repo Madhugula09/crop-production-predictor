@@ -32,39 +32,32 @@ R² (Coefficient of Determination): Measures the proportion of the variance in t
 
 ![image](https://github.com/user-attachments/assets/d9e176f0-2fd3-44b7-8e84-44bbf548529d)
 
---- Actual vs preddict :
+--- Actual vs Predicted :
 
 ![image](https://github.com/user-attachments/assets/4d02d15b-0a98-4dd0-923a-c277f1facf9f)
 
-
-Machine Learning Models: Implements three models for crop production prediction:
+## 🤖 ML Models: Trained and evaluated three models:
 
 ![image](https://github.com/user-attachments/assets/08b32746-121c-4932-8294-b81360fc9138)
-
--- Linear Regression
-
--- Decision Tree Regressor
-
--- Random Forest Regressor
-
-
-Prediction: Estimates crop production based on user inputs for area harvested and yield.
-
-Model Evaluation: Provides evaluation metrics such as MAE, MSE, RMSE, and R² to assess model performance.
-
-Prediction History: Allows users to track and download the history of predictions.
-
-## 📄 Prediction History 
-
-![image](https://github.com/user-attachments/assets/aa8555d6-ede2-44f8-9381-e8144d33b836)
-
-## 🤖 ML Models: Trained and evaluated three models:
 
 Linear Regression: A simple and interpretable model used to predict crop production based on linear relationships between features.
 
 Decision Tree Regressor: A non-linear model that splits data into smaller subsets based on feature values.
 
 Random Forest Regressor: An ensemble model that combines multiple decision trees to improve prediction accuracy and reduce overfitting.
+
+Machine Learning Models: Implements three models for crop production prediction:
+
+>>> Prediction: Estimates crop production based on user inputs for area harvested and yield.
+
+>>> Model Evaluation: Provides evaluation metrics such as MAE, MSE, RMSE, and R² to assess model performance.
+
+## 📄 Prediction History 
+
+Prediction History: Allows users to track and download the history of predictions.
+
+![image](https://github.com/user-attachments/assets/aa8555d6-ede2-44f8-9381-e8144d33b836)
+
 
 ## 🌐 Interactive Dashboard
 
