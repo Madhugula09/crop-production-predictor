@@ -10,9 +10,6 @@ A model to predict crop production using machine learning and agricultural data 
 
 . Visualization: Matplotlib, Seaborn, Streamlit
 
-![image](https://github.com/user-attachments/assets/f57e420a-aca6-4c96-8b2e-7bc66ec93f29)
-
-
 ## Features
 -- Data Preprocessing: Removes unnecessary columns, handles missing values, and cleans numerical data.
 
@@ -22,6 +19,10 @@ A model to predict crop production using machine learning and agricultural data 
 ## 📊 Database Integration
 
 -- Stored processed data in a MySQL database (crop_data table).
+-- EDA Visualization.
+
+![image](https://github.com/user-attachments/assets/f57e420a-aca6-4c96-8b2e-7bc66ec93f29)
+
 
 ## 📈 Evaluation Metrics and Outlier Removal 
 
