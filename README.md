@@ -59,7 +59,7 @@ Machine Learning Models: Implements three models for crop production prediction:
 
 -- Future predictions
 
-![image](https://github.com/user-attachments/assets/09e23d68-3ba6-4295-b533-7b3859738e94)
+![image](https://github.com/user-attachments/assets/5788657c-12c8-4a64-ada8-e03635895934)
 
 -- Past predictions
 
