@@ -53,11 +53,13 @@ Machine Learning Models: Implements three models for crop production prediction:
 ## 🌐 Interactive Dashboard
 
 -- Streamlit app to filters 
+
 -- Future predictions
 
 ![image](https://github.com/user-attachments/assets/09e23d68-3ba6-4295-b533-7b3859738e94)
 
 -- Past predictions
+
 ![image](https://github.com/user-attachments/assets/3d127ee0-431f-4e96-9668-74a529c57999)
 
 
