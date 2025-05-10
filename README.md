@@ -34,11 +34,7 @@ RMSE (Root Mean Squared Error): The square root of MSE, representing the error i
 
 R² (Coefficient of Determination): Measures the proportion of the variance in the dependent variable that is predictable from the independent variables.
 
-![image](https://github.com/user-attachments/assets/d9e176f0-2fd3-44b7-8e84-44bbf548529d)
-
---- Actual vs Predicted :
-
-![image](https://github.com/user-attachments/assets/4d02d15b-0a98-4dd0-923a-c277f1facf9f)
+![image](https://github.com/user-attachments/assets/c2b1b7bb-dda1-403f-a79c-b5ed355d0bdb)
 
 ## 🤖 ML Models: Trained and evaluated three models:
 
