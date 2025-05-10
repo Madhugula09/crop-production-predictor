@@ -18,8 +18,7 @@ A model to predict crop production using machine learning and agricultural data 
 
 ## 📊 Database Integration
 
--- Stored processed data in a MySQL database (crop_data table).
--- EDA Visualization.
+-- Stored processed data in a MySQL database (crop_data table) and EDA Visualization.
 
 ![image](https://github.com/user-attachments/assets/f57e420a-aca6-4c96-8b2e-7bc66ec93f29)
 
