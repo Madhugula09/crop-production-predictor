@@ -38,8 +38,6 @@ R² (Coefficient of Determination): Measures the proportion of the variance in t
 
 ## 🤖 ML Models: Trained and evaluated three models:
 
-![image](https://github.com/user-attachments/assets/08b32746-121c-4932-8294-b81360fc9138)
-
 Linear Regression: A simple and interpretable model used to predict crop production based on linear relationships between features.
 
 Decision Tree Regressor: A non-linear model that splits data into smaller subsets based on feature values.
@@ -52,21 +50,15 @@ Machine Learning Models: Implements three models for crop production prediction:
 
 -- Model Evaluation: Provides evaluation metrics such as MAE, MSE, RMSE, and R² to assess model performance.
 
-## 📄 Prediction History 
-
-Prediction History: Allows users to track and download the history of predictions.
-
-![image](https://github.com/user-attachments/assets/aa8555d6-ede2-44f8-9381-e8144d33b836)
-
-
 ## 🌐 Interactive Dashboard
 
 -- Streamlit app to filters 
+-- Future predictions
 
-![image](https://github.com/user-attachments/assets/797aaf67-e80d-4a5f-a6ab-6500ede123e5)
+![image](https://github.com/user-attachments/assets/09e23d68-3ba6-4295-b533-7b3859738e94)
 
-1. Market Price Forecasting and Precision Farming
+-- Past predictions
+![image](https://github.com/user-attachments/assets/3d127ee0-431f-4e96-9668-74a529c57999)
 
-2. Agro-Technology Solutions and Evaluation & Insights Section
 
 
