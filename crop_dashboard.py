@@ -1,226 +1,240 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import mysql.connector
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+import plotly.express as px
 import numpy as np
-import warnings
-import random
 
-warnings.filterwarnings("ignore")
-
-# --- Load Data from MySQL ---
+# ------------------- DB Connection -------------------
 def load_data():
-    conn = mysql.connector.connect(
+    connection = mysql.connector.connect(
         host="localhost",
         user="root",
         password="Padmavathi@09",
         database="crop_production_db"
     )
     query = "SELECT * FROM crop_data"
-    df = pd.read_sql(query, conn)
-    conn.close()
+    df = pd.read_sql(query, connection)
+    connection.close()
     return df
 
-# --- Preprocessing ---
-def preprocess_data(df):
-    df = df.copy()
-    df = df.drop(columns=['id', 'unit', 'flag', 'flag_description'], errors='ignore')
-    df = df.rename(columns={'yied': 'yield'})
-    for col in ['area_harvested', 'yield', 'production']:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
-    df = df.dropna(subset=['area_harvested', 'yield', 'production'])
-    df = df[(df['area_harvested'] > 0) & (df['yield'] > 0) & (df['production'] > 0)]
-    for col in ['area_harvested', 'yield', 'production']:
-        Q1 = df[col].quantile(0.25)
-        Q3 = df[col].quantile(0.75)
-        IQR = Q3 - Q1
-        df = df[(df[col] >= Q1 - 1.5 * IQR) & (df[col] <= Q3 + 1.5 * IQR)]
-    return df
+# ------------------- App UI -------------------
+st.title("🌾 Crop Production Predictor")
 
-# --- Outlier Detection ---
-def detect_outliers(df):
-    outliers_summary = {}
-    for col in ['area_harvested', 'yield', 'production']:
-        Q1 = df[col].quantile(0.25)
-        Q3 = df[col].quantile(0.75)
-        IQR = Q3 - Q1
-        lower = Q1 - 1.5 * IQR
-        upper = Q3 + 1.5 * IQR
-        outliers = df[(df[col] < lower) | (df[col] > upper)]
-        outliers_summary[col] = len(outliers)
-    return outliers_summary
+# Load data
+df = load_data()
 
-# --- Train Model with Cross-validation ---
-def train_model(df, model_type):
-    if len(df) < 2:
-        return None, None, None, None, None, None, None, None, None
+# Drop rows with missing critical values
+df = df.dropna(subset=["country", "crop", "year", "area_harvested", "yield", "production"])
+df = df[df["yield"].apply(lambda x: str(x).replace('.', '', 1).isdigit())]
+df["yield"] = df["yield"].astype(float)
 
-    X = df[['area_harvested', 'yield']]
-    y = df['production']
+st.subheader("🧹 Full Cleaned Dataset from MySQL")
+st.dataframe(df, use_container_width=True)
 
-    model = None
-    if model_type == "Linear Regression":
-        model = LinearRegression()
-    elif model_type == "Decision Tree":
-        model = DecisionTreeRegressor(random_state=42)
-    elif model_type == "Random Forest":
-        model = RandomForestRegressor(n_estimators=100, random_state=42)
+# Sidebar filters
+st.sidebar.header("🔍 Filter Data")
+selected_crop = st.sidebar.selectbox("Crop", sorted(df["crop"].unique()))
+selected_country = st.sidebar.selectbox("Country", sorted(df["country"].unique()))
+year_range = st.sidebar.slider("Year Range", int(df["year"].min()), int(df["year"].max()), (2019, 2023))
+
+# Filtered data
+filtered_df = df[
+    (df["crop"] == selected_crop) &
+    (df["country"] == selected_country) &
+    (df["year"].between(year_range[0], year_range[1]))
+]
+
+st.subheader("📊 Filtered Data")
+st.write(filtered_df)
+
+# ----- EDA -----------
+
+st.subheader("📊 Exploratory Data Analysis (EDA)")
+
+# Ensure essential columns exist
+if not {'country', 'crop', 'year', 'area_harvested', 'yield', 'production'}.issubset(filtered_df.columns):
+    st.warning("Essential columns missing for full EDA.")
+else:
+    # 1. Crop Types Distribution
+    st.markdown("### 🌱 Crop Distribution")
+    crop_counts = filtered_df['crop'].value_counts().reset_index()
+    crop_counts.columns = ['Crop', 'Count']
+    st.plotly_chart(px.bar(crop_counts, x='Crop', y='Count', title='Crop Type Distribution', color='Count'))
+
+    # 2. Geographical Crop Distribution
+    st.markdown("### 🌍 Geographical Crop Distribution")
+    region_crop = filtered_df.groupby(['country', 'crop'])['production'].sum().reset_index()
+    fig = px.sunburst(region_crop, path=['country', 'crop'], values='production',
+    title='Production by Region and Crop')
+    st.plotly_chart(fig)
+
+    # 3. Yearly Trends in Area, Yield, and Production
+    st.markdown("### 📅 Yearly Trends")
+    yearly = filtered_df.groupby('year')[['area_harvested', 'yield', 'production']].mean().reset_index()
+    fig = px.line(yearly, x='year', y=['area_harvested', 'yield', 'production'],
+    markers=True, title='Yearly Trends: Area, Yield, Production')
+    st.plotly_chart(fig)
+
+    # 4. Growth Analysis per Crop
+    st.markdown("### 📈 Crop-wise Growth Trends")
+    crop_yearly = filtered_df.groupby(['year', 'crop'])['production'].sum().reset_index()
+    fig = px.line(crop_yearly, x='year', y='production', color='crop',
+    title='Production Growth per Crop')
+    st.plotly_chart(fig)
+
+    # 5. Area vs Yield Relationship
+    st.markdown("### 🌾 Area Harvested vs Yield")
+    fig = px.scatter(filtered_df, x='area_harvested', y='yield', color='crop',
+    size='production', hover_data=['country'],
+    title='Area Harvested vs Yield')
+    st.plotly_chart(fig)
+
+    # 6. Correlation Heatmap
+    st.markdown("### 🔗 Input-Output Correlation")
+    corr_df = filtered_df[['area_harvested', 'yield', 'production']].corr()
+    st.dataframe(corr_df.style.background_gradient(cmap='YlGnBu'))
+
+    # 7. Yield Comparison Across Crops
+    st.markdown("### ⚖️ Yield per Crop")
+    yield_crop = filtered_df.groupby('crop')['yield'].mean().sort_values(ascending=False).reset_index()
+    st.plotly_chart(px.bar(yield_crop, x='crop', y='yield',
+    title='Average Yield by Crop', color='yield'))
+
+    # 8. Production Comparison Across Regions
+    st.markdown("### 🏭 Production Across Regions")
+    prod_region = filtered_df.groupby('country')['production'].sum().sort_values(ascending=False).reset_index()
+    st.plotly_chart(px.bar(prod_region, x='country', y='production',
+    title='Total Production by Region', color='production'))
+
+    # 9. Productivity Ratio (Production / Area)
+    st.markdown("### 📊 Productivity Ratio")
+    filtered_df['productivity_ratio'] = filtered_df['production'] / filtered_df['area_harvested']
+    prod_ratio = filtered_df.groupby('crop')['productivity_ratio'].mean().reset_index()
+    st.plotly_chart(px.bar(prod_ratio.sort_values('productivity_ratio', ascending=False),
+    x='crop', y='productivity_ratio',
+    title='Productivity Ratio per Crop'))
+
+    # 10. Outlier Detection (Boxplot)
+    st.markdown("### ❗ Outlier Detection in Yield")
+    fig = px.box(filtered_df, x='crop', y='yield', title='Yield Distribution by Crop (Box Plot)')
+    st.plotly_chart(fig)
+
+# ------------------- Model Training -------------------
+if len(filtered_df) < 10:
+    st.warning("Not enough data for training. Please adjust filters.")
+else:
+    X = filtered_df[["year", "area_harvested", "yield"]]
+    y = filtered_df["production"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    model.fit(X_train, y_train)
-    preds = model.predict(X_test)
 
-    mae = mean_absolute_error(y_test, preds)
-    mse = mean_squared_error(y_test, preds)
-    rmse = np.sqrt(mse)
-    r2 = r2_score(y_test, preds)
+    # Initialize models
+    lr_model = LinearRegression()
+    rf_model = RandomForestRegressor(random_state=42)
+    dt_model = DecisionTreeRegressor(random_state=42)
 
-    cv_value = min(5, len(X))
-    if cv_value < 2:
-        st.warning("Not enough data for cross-validation. At least 2 samples required.")
-    else:
-        cv_scores = cross_val_score(model, X, y, cv=cv_value, scoring='neg_mean_squared_error')
-        mean_cv_mse = -cv_scores.mean()
+    # Train models
+    lr_model.fit(X_train, y_train)
+    rf_model.fit(X_train, y_train)
+    dt_model.fit(X_train, y_train)
 
-    return model, preds, y_test, mae, mse, rmse, r2, model_type, mean_cv_mse
+    # ------------------- Model Evaluation -------------------
+    models = {
+        "Linear Regression": lr_model,
+        "Random Forest": rf_model,
+        "Decision Tree": dt_model
+    }
 
-# --- Streamlit App ---
-st.set_page_config(page_title="Crop Production Prediction", layout="wide")
-st.title("🌾 Crop Production Prediction Dashboard")
+    st.subheader("📈 Model Evaluation on Test Data")
+    results = []
+    for name, model in models.items():
+        y_pred = model.predict(X_test)
+        r2 = r2_score(y_test, y_pred)
+        mae = mean_absolute_error(y_test, y_pred)
+        mse = mean_squared_error(y_test, y_pred)
+        rmse = np.sqrt(mse)
+        results.append({
+            "Model": name,
+            "R² Score": round(r2, 4),
+            "MAE": round(mae, 2),
+            "MSE": round(mse, 2),
+            "RMSE": round(rmse, 2)
+        })
 
-data = load_data()
-st.sidebar.header("🔍 Filter the Data")
-countries = st.sidebar.multiselect("🌍 Country", sorted(data['country'].dropna().unique()))
-crops = st.sidebar.multiselect("🌽 Crop", sorted(data['crop'].dropna().unique()))
-years = st.sidebar.multiselect("📅 Year", sorted(data['year'].dropna().unique()))
-model_option = st.sidebar.selectbox("🧠 Select Model", ["Linear Regression", "Decision Tree", "Random Forest"])
-
-filtered_df = data.copy()
-if countries:
-    filtered_df = filtered_df[filtered_df['country'].isin(countries)]
-if crops:
-    filtered_df = filtered_df[filtered_df['crop'].isin(crops)]
-if years:
-    filtered_df = filtered_df[filtered_df['year'].isin(years)]
-
-filtered_df_cleaned = preprocess_data(filtered_df)
-st.subheader("🧹 Cleaned Data")
-st.dataframe(filtered_df_cleaned)
-
-st.subheader("📛 Outlier Summary")
-st.write(detect_outliers(filtered_df_cleaned))
-
-model, predictions, y_test, mae, mse, rmse, r2, model_used, mean_cv_mse = train_model(filtered_df_cleaned, model_option)
-
-if model and predictions is not None:
-    st.success(f"✅ {model_used} model trained successfully!")
-    st.metric("📏 MAE", f"{mae:,.2f}")
-    st.metric("📐 MSE", f"{mse:,.2f}")
-    st.metric("🔢 RMSE", f"{rmse:,.2f}")
-    st.metric("📊 R²", f"{r2:.4f}")
-    st.metric("📅 Cross-validated MSE", f"{mean_cv_mse:,.2f}")
-
-    st.subheader("📊 Actual vs Predicted")
-    fig, ax = plt.subplots(figsize=(6, 4))  # You can change width and height here
-    ax.scatter(y_test, predictions, alpha=0.6, color='blue', label='Predictions')
-    ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', label='Ideal Fit')
-    ax.set_xlabel("Actual Production")
-    ax.set_ylabel("Predicted Production")
-    ax.set_title(f"{model_used} - Actual vs Predicted")
-    ax.legend(fontsize=3)
-    st.pyplot(fig)
-
-st.subheader("🏆 Compare All Models on This Data")
-results = []
-for m in ["Linear Regression", "Decision Tree", "Random Forest"]:
-    model, preds, y_test, mae, mse, rmse, r2, name, mean_cv_mse = train_model(filtered_df_cleaned, m)
-    if model:
-        results.append({"Model": name, "R²": r2, "MAE": mae, "MSE": mse, "RMSE": rmse, "Cross-validated MSE": mean_cv_mse})
-if results:
-    results_df = pd.DataFrame(results).sort_values(by=["R²", "MAE", "MSE", "RMSE"], ascending=[False, True, True, True])
+    results_df = pd.DataFrame(results)
     st.dataframe(results_df)
-    best_model = results_df.iloc[0]
-    st.success(f"🥇 Best model based on all values (R², MAE, MSE, RMSE) is: **{best_model['Model']}**")
-    st.write(f"📊 **R²**: {best_model['R²']:.4f}, 📏 **MAE**: {best_model['MAE']:.2f}, 📐 **MSE**: {best_model['MSE']:.2f}, 🔢 **RMSE**: {best_model['RMSE']:.2f}")
 
-st.subheader("🔮 Predict Crop Production")
-area_input = st.number_input("📐 Area Harvested (hectares)", min_value=1.0, value=1.0)
-yield_input = st.number_input("🧪 Yield (kg/hectare)", min_value=1.0, value=1.0)
-if model:
-    prediction = model.predict([[area_input, yield_input]])[0]
-    st.success(f"🌟 Predicted Production using **{model_used}**: **{prediction:,.2f} tons**")
-    if "history" not in st.session_state:
-        st.session_state.history = []
-    st.session_state.history.append({"Model": model_used, "Area Harvested": area_input, "Yield": yield_input, "Predicted Production": prediction})
+    # Best model based on R²
+    best_model_row = results_df.sort_values("R² Score", ascending=False).iloc[0]
+    best_model_name = best_model_row["Model"]
 
-if "history" in st.session_state and st.session_state.history:
-    history_df = pd.DataFrame(st.session_state.history)
-    st.subheader("📄 Prediction History")
-    st.dataframe(history_df)
-    csv = history_df.to_csv(index=False).encode('utf-8')
-    st.download_button("⬇️ Download Prediction History", csv, "prediction_history.csv", "text/csv")
-    st.subheader("📈 Prediction Trends")
-    fig2, ax2 = plt.subplots()
-    sns.barplot(data=history_df, x="Model", y="Predicted Production", ax=ax2, ci=None)
-    ax2.set_title("Model-wise Predicted Production")
-    st.pyplot(fig2)
+    st.success(f"✅ **Best model based on test data R² Score:** {best_model_name}")
 
-# ------------------- New Sections -------------------
-st.header("🧠 Advanced Features")
+    # ------------------- Future Prediction -------------------
+    st.subheader("📅 Predict Future Production")
 
-# Market Price Forecasting
-st.subheader("📈 Market Price Forecasting")
-if crops and years:
-    for crop in crops:
-        for year in years:
-            st.write(f"**{crop} ({year})** - Estimated Price: ₹{random.randint(1000, 5000)} per ton")
-else:
-    st.info("Select Crop and Year to see price forecasts.")
+    future_year = st.number_input("Enter Future Year", min_value=2024, max_value=2100, value=2032)
+    future_area = st.number_input("Enter Area Harvested (hectares)", min_value=1, value=100)
+    future_yield = st.number_input("Enter Yield (tons/hectare)", min_value=0.0, value=2.5, step=0.1)
+
+    # Estimated price for future prediction
+    future_price_per_ton = st.number_input("Estimated Future Price per Ton (USD)", value=250.0, key="future_price_per_ton")
+    if st.button("Predict Future Production"):
+        future_input = [[future_year, future_area, future_yield]]
+        st.markdown(f"### 📌 Predicting for year {future_year} and area harvested {future_area} hectares")
+
+        for name, model in models.items():
+            future_pred = model.predict(future_input)[0]
+            future_pred = max(0, future_pred)  # Ensure non-negative prediction
+            st.write(f"**{name} Prediction:** {future_pred:.2f} tons")
+            estimated_value = future_pred * future_price_per_ton
+            st.write(f"Estimated Value (in USD): ${estimated_value:.2f}")
+
+        st.info(f"✅ Best model for training data: **{best_model_name}**")
+
+    # ------------------- Past Prediction -------------------
+    st.subheader("📅 Predict Past Production")
+
+    past_year = st.number_input("Enter Past Year", min_value=2000, max_value=2023, value=2020)
+    past_area = st.number_input("Enter Past Area Harvested (hectares)", min_value=1, value=100)
+    past_yield = st.number_input("Enter Past Yield (tons/hectare)", min_value=0.0, value=2.5, step=0.1)
+
+    # Estimated price for past prediction
+    past_price_per_ton = st.number_input("Estimated Price per Ton (USD)", value=200.0, key="past_price_per_ton")
+
+    if st.button("Predict Past Production"):
+        past_input = [[past_year, past_area, past_yield]]
+        st.markdown(f"### 📌 Predicting for year {past_year} and area harvested {past_area} hectares")
+
+        for name, model in models.items():
+            past_pred = model.predict(past_input)[0]
+            st.write(f"**{name} Prediction:** {past_pred:.2f} tons")
+            estimated_value = past_pred * past_price_per_ton
+            st.write(f"Estimated Value (in USD): ${estimated_value:.2f}")
+
+        st.info(f"✅ Best model for past prediction: **{best_model_name}**")
+
+crops = sorted(filtered_df['crop'].dropna().unique().tolist())
+years = sorted(filtered_df['year'].dropna().unique().tolist())
+countries = sorted(filtered_df['country'].dropna().unique().tolist())
 
 # Precision Farming Tips
-st.subheader("🌾 Precision Farming")
+st.subheader("🌿 Precision Farming Tips")
 if crops:
     for crop in crops:
-        st.markdown(f"**{crop}**: Use soil sensors, drone imagery, and precision irrigation for yield boost.")
+        st.markdown(f"**{crop}**: Use drone mapping, soil sensors, and AI irrigation to boost {crop} yield.")
 else:
-    st.info("Select crop(s) to get precision farming tips.")
+    st.info("Select crop(s) to get tips.")
 
-# Agro-Technology Solutions
-st.subheader("🤖 Agro-Technology Solutions")
+# Agro-Tech Solutions
+st.subheader("🤖 Agro-Tech Solutions by Country")
 if countries:
     for country in countries:
-        st.write(f"**{country}**: Recommend IoT sensors, satellite monitoring, and AI-based pest detection.")
+        st.write(f"**{country}**: Use IoT sensors, weather analytics & AI-driven pest monitoring.")
 else:
-    st.info("Select country to view relevant agri-tech solutions.")
-
-
-# Evaluation & Insights
-st.subheader("📊 Evaluation & Insights")
-
-# Ensure your DataFrame isn't empty and has required columns
-required_columns = {'crop', 'country', 'production'}
-
-if (
-    isinstance(filtered_df_cleaned, pd.DataFrame)
-    and not filtered_df_cleaned.empty
-    and required_columns.issubset(filtered_df_cleaned.columns)
-):
-    try:
-        # Drop missing values in production to avoid NaN issues
-        df = filtered_df_cleaned.dropna(subset=['production'])
-
-        best_crop = df.groupby('crop')['production'].mean().idxmax()
-        top_country = df.groupby('country')['production'].mean().idxmax()
-
-        st.write(f"🌟 **Highest average production crop**: {best_crop}")
-        st.write(f"🌍 **Top producing country (avg)**: {top_country}")
-    except Exception as e:
-        st.error(f"⚠️ An error occurred while processing insights: {e}")
-else:
-    st.warning("⚠️ No data available for insights please select check with filters ")
+    st.info("Select country to view agri-tech recommendations.")
