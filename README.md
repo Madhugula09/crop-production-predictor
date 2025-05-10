@@ -13,7 +13,8 @@ A model to predict crop production using machine learning and agricultural data 
 ## Features
 -- Data Preprocessing: Removes unnecessary columns, handles missing values, and cleans numerical data.
 
- ![image](https://github.com/user-attachments/assets/77c43522-ea76-4118-baf6-4096f0b53f63)
+![image](https://github.com/user-attachments/assets/5c84fe9c-8e3b-43a6-b144-13aae2cd82e9)
+
 
 ## 📊 Database Integration
 
